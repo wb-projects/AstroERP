@@ -1,4 +1,0 @@
-select bh.*,bhe.partner_nev from biz_header bh
-left join biz_header_ext bhe on bhe.biz_header_id = bh.id
-where bh.biz_modul_kod = 1303
-AND kelte BETWEEN {1} AND {2} {3}

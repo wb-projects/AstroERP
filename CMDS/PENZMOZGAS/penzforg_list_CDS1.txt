@@ -1,4 +1,0 @@
-select distinct tipus, sum(osszeg * arfolyam) vosszeg from penzmozgasok
-where kelte BETWEEN {1} AND {2}
-group by tipus
-order by tipus

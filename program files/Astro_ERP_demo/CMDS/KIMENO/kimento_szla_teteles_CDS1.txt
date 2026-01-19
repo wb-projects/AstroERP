@@ -1,4 +1,0 @@
-    SELECT * FROM biz_header bh, biz_header_ext bhe WHERE 
-     bh.id = bhe.biz_header_id AND
-     kelte BETWEEN {1} AND {2} {3}
-     AND biz_modul_kod = {4} AND lezarva = 1 ORDER BY kelte

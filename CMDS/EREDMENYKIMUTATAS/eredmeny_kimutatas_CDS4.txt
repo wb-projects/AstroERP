@@ -1,6 +1,0 @@
-select sum(bie.ossz_brutto_ft) osszeg from biz_item_ext bie
-left join biz_item bi on bi.id = bie.biz_item_id
-left join biz_header bh on bi.biz_header_id = bh.id
-left join koltseghelyek k on k.id = bi.koltseghely_id
-left join raktar r on r.id = bh.raktar_id
-where bh.kelte BETWEEN {1} AND {2} and r.archiv = 1 

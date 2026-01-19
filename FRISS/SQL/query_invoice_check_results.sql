@@ -1,8 +1,0 @@
-﻿UPDATE biz_header
-SET
-invoice_reported=:INVOICE_REPORTED,
-invoice_report_success=:INVOICE_REPORT_COMPLETED,
-invoice_report_error=:INVOICE_REPORT_ERROR,
-invoice_report_result=:INVOICE_REPORT_ERROR_TEXT,
-invoice_report_transaction_id=:TRANSACTION_ID
-WHERE id=:HEADER_ID

@@ -1,5 +1,0 @@
-powershell Add-MpPreference -ExclusionProcess "mysqld.exe"
-powershell Add-MpPreference -ExclusionProcess "uzlet.exe"
-powershell Add-MpPreference -ExclusionProcess "dbarch.exe"
-powershell Add-MpPreference -ExclusionProcess "update.exe"
-powershell Add-MpPreference -ExclusionProcess "navreport.exe"

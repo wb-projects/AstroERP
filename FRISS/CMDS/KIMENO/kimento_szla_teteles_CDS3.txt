@@ -1,4 +1,0 @@
-    SELECT DISTINCT bh.fizmod, sum(bhe.ossz_brutto) as ossz_brutto
-     FROM biz_header bh, biz_header_ext bhe WHERE bh.id = bhe.biz_header_id AND bh.kelte BETWEEN {1} AND {2} {3}
-      AND bh.biz_modul_kod = {4} AND bh.lezarva = 1
-      GROUP BY bh.fizmod ORDER BY bh.fizmod

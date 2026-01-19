@@ -1,1 +1,0 @@
-CreateObject("Wscript.Shell").Run """c:\Program Files (x86)\Astro_ERP_demo\uzlet.exe""", 1, True

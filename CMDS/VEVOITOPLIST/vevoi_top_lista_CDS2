@@ -1,9 +1,0 @@
-select sum(szlaosszbrutto) szlaosszbrutto, sum(szalosszbrutto) szalosszbrutto, sum(arvosszbrutto) arvosszbrutto, sum(nyugosszbrutto) nyugosszbrutto, sum(szlaosszbruttoarvetes) szlaosszbruttoarvetes from
-(SELECT 
- coalesce((Select sum(ossz_brutto) From biz_header, biz_header_ext Where biz_header.kelte BETWEEN {1} AND {2} And biz_header_ext.biz_header_id=biz_header.id And lezarva=1 And biz_header.biz_modul_kod=1301 And partner_id=partner.id),0) AS szlaosszbrutto
-,coalesce((Select sum(ossz_brutto) From biz_header, biz_header_ext Where biz_header.kelte BETWEEN {1} AND {2} And biz_header_ext.biz_header_id=biz_header.id And lezarva=1 And biz_header.biz_modul_kod=1302 And partner_id=partner.id),0) AS szalosszbrutto
-,coalesce((Select sum(ossz_brutto) From biz_header, biz_header_ext Where biz_header.kelte BETWEEN {1} AND {2} And biz_header_ext.biz_header_id=biz_header.id And lezarva=1 And biz_header.biz_modul_kod=1306 And partner_id=partner.id),0) AS arvosszbrutto
-,coalesce((Select sum(ossz_brutto) From biz_header, biz_header_ext Where biz_header.kelte BETWEEN {1} AND {2} And biz_header_ext.biz_header_id=biz_header.id And lezarva=1 And biz_header.biz_modul_kod=1303 And partner_id=partner.id),0) AS nyugosszbrutto
-,coalesce((Select sum(ossz_brutto) From biz_header, biz_header_ext Where biz_header.kelte BETWEEN {1} AND {2} And biz_header_ext.biz_header_id=biz_header.id And lezarva=1 And biz_header.biz_modul_kod=1301 And partner_id=partner.id),0) 
-+ coalesce((Select sum(ossz_brutto) From biz_header, biz_header_ext Where biz_header.kelte BETWEEN {1} AND {2} And biz_header_ext.biz_header_id=biz_header.id And lezarva=1 And biz_header.biz_modul_kod=1306 And partner_id=partner.id),0) AS szlaosszbruttoarvetes
- FROM partner WHERE partner.kod<>0 ) t1
