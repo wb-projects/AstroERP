@@ -1,0 +1,109 @@
+SELECT * FROM (
+
+SELECT Concat('SZÁLLÍTÓLEVÉL+SZÁMLA LISTA',' (',If(SZH1.biz_modul_kod=1301, SZH1.fizmod, SZH2.fizmod),')') as txt, 'SZÁLLÍTÓLEVÉL+SZÁMLA' as biztxt, If(SZH1.biz_modul_kod=1301, SZH1.fizmod, SZH2.fizmod) as fmtxt, Concat(SZH1.sorszam, ' + ', SZH2.sorszam) as szamla_szam, SZH1E.munkatars_nev felhasznalo_nev, SZH1E.partner_nev ugyfel_nev, SZH1.kelte, SZH1.hatarido,
+             If(SZH1.biz_modul_kod=1301, SZH1.fizmod, SZH2.fizmod) as fiz_mod,
+             If(SZH1.biz_modul_kod=1301, SZH2E.ossz_netto_ft, SZH1E.ossz_netto_ft) as szla_ertek_netto, 
+             If(SZH1.biz_modul_kod=1301, SZH1E.ossz_afa_ft, SZH2E.ossz_afa_ft) as szla_afa_ertek, 
+             If(SZH1.biz_modul_kod=1301, SZH2E.ossz_netto_ft+SZH1E.ossz_afa_ft, SZH1E.ossz_netto_ft+SZH2E.ossz_afa_ft) as szla_ertek_brutto 
+             FROM biz_header SZH1, biz_header SZH2, biz_header_ext SZH1E, biz_header_ext SZH2E
+             WHERE SZH2.id=SZH1.source_header_id AND SZH1.id=SZH1E.biz_header_id AND SZH2.id=SZH2E.biz_header_id
+             AND (SZH1.source_header_id is not null ) 
+             AND ((SZH1.biz_modul_kod=1301 AND SZH2.biz_modul_kod=1302) OR (SZH2.biz_modul_kod=1301 AND SZH1.biz_modul_kod=1302)) 
+             AND SZH1.lezarva = 1 AND SZH2.lezarva = 1 
+             AND SZH1.kelte BETWEEN {1} AND {2} {3}
+           
+UNION
+
+SELECT Concat('SZÁLLÍTÓLEVÉL+SZÁMLA ',fiz_mod,' ÖSSZESEN') as txt, 'SZÁLLÍTÓLEVÉL+SZÁMLA' as biztxt, fiz_mod as fmtxt, '' as szamla_szam, '' as felhasznalo_nev, '' as ugyfel_nev, '' as kelte, '' as hatarido, '' as fiz_mod,
+             sum(szla_ertek_netto) as szla_ertek_netto, sum(szla_afa_ertek) as szla_afa_ertek, sum(szla_ertek_brutto) as szla_ertek_brutto 
+             FROM (SELECT
+             If(SZH1.biz_modul_kod=1301, SZH1.fizmod, SZH2.fizmod) as fiz_mod,
+             If(SZH1.biz_modul_kod=1301, SZH2E.ossz_netto_ft, SZH1E.ossz_netto_ft) as szla_ertek_netto, 
+             If(SZH1.biz_modul_kod=1301, SZH1E.ossz_afa_ft, SZH2E.ossz_afa_ft) as szla_afa_ertek, 
+             If(SZH1.biz_modul_kod=1301, SZH2E.ossz_netto_ft+SZH1E.ossz_afa_ft, SZH1E.ossz_netto_ft+SZH2E.ossz_afa_ft) as szla_ertek_brutto 
+             FROM biz_header SZH1, biz_header SZH2 , biz_header_ext SZH1E, biz_header_ext SZH2E
+             WHERE SZH2.id=SZH1.source_header_id AND SZH1.id=SZH1E.biz_header_id AND SZH2.id=SZH2E.biz_header_id
+             AND (SZH1.source_header_id is not null ) 
+             AND ((SZH1.biz_modul_kod=1301 AND SZH2.biz_modul_kod=1302) OR (SZH2.biz_modul_kod=1301 AND SZH1.biz_modul_kod=1302)) 
+             AND SZH1.lezarva = 1 AND SZH2.lezarva = 1 
+             AND SZH1.kelte BETWEEN {1} AND {2} {3}
+             ) T GROUP BY fiz_mod
+
+
+UNION
+
+SELECT 'SZÁLLÍTÓLEVÉL+SZÁMLA ÖSSZESEN' as txt, 'SZÁLLÍTÓLEVÉL+SZÁMLA' as biztxt, 'SUM' as fmtxt, '' as szamla_szam, '' as felhasznalo_nev, '' as ugyfel_nev, '' as kelte, '' as hatarido, '' as fiz_mod,
+             sum(szla_ertek_netto) as szla_ertek_netto, sum(szla_afa_ertek) as szla_afa_ertek, sum(szla_ertek_brutto) as szla_ertek_brutto 
+             FROM (SELECT 
+             If(SZH1.biz_modul_kod=1301, SZH2E.ossz_netto_ft, SZH1E.ossz_netto_ft) as szla_ertek_netto, 
+             If(SZH1.biz_modul_kod=1301, SZH1E.ossz_afa_ft, SZH2E.ossz_afa_ft) as szla_afa_ertek, 
+             If(SZH1.biz_modul_kod=1301, SZH2E.ossz_netto_ft+SZH1E.ossz_afa_ft, SZH1E.ossz_netto_ft+SZH2E.ossz_afa_ft) as szla_ertek_brutto 
+             FROM biz_header SZH1, biz_header SZH2 , biz_header_ext SZH1E, biz_header_ext SZH2E
+             WHERE SZH2.id=SZH1.source_header_id AND SZH1.id=SZH1E.biz_header_id AND SZH2.id=SZH2E.biz_header_id
+             AND (SZH1.source_header_id is not null ) 
+             AND ((SZH1.biz_modul_kod=1301 AND SZH2.biz_modul_kod=1302) OR (SZH2.biz_modul_kod=1301 AND SZH1.biz_modul_kod=1302)) 
+             AND SZH1.kelte BETWEEN {1} AND {2}  {3}
+             AND SZH1.lezarva = 1 AND SZH2.lezarva = 1) T
+
+UNION
+
+SELECT Concat(SZH.cimsor,' LISTA (',fizmod,')') as txt, SZH.cimsor as biztxt, fizmod as fmtxt, SZH.sorszam, SZHE.munkatars_nev, SZHE.partner_nev, SZH.kelte, SZH.hatarido, SZH.fizmod, 
+             SZHE.ossz_netto_ft, SZHE.ossz_afa_ft, SZHE.ossz_brutto_ft 
+             FROM biz_header SZH, biz_header_ext SZHE 
+             WHERE SZH.id=SZHE.biz_header_id AND
+             (SZH.biz_modul_kod=1303 OR SZH.biz_modul_kod=1301 OR SZH.biz_modul_kod=1302)
+             AND SZH.lezarva=1
+             AND SZH.kelte BETWEEN {1} AND {2}  {3}
+UNION
+
+SELECT Concat(cimsor,' ',fizmod,' ÖSSZESEN') as txt, cimsor as biztxt, fizmod as fmtxt, '' as szamla_szam, '' as felhasznalo_nev, '' as ugyfel_nev, '' as kelte, '' as hatarido, '' as fiz_mod,
+             sum(ossz_netto_ft) as szla_ertek_netto, sum(ossz_afa_ft) as szla_afa_ertek, sum(ossz_brutto_ft) as szla_ertek_brutto 
+             FROM (SELECT SZH.cimsor, SZH.sorszam, SZHE.munkatars_nev, SZHE.partner_nev, SZH.kelte, SZH.hatarido, SZH.fizmod, 
+             SZHE.ossz_netto_ft, SZHE.ossz_afa_ft, SZHE.ossz_brutto_ft 
+             FROM biz_header SZH, biz_header_ext SZHE 
+             WHERE SZH.id=SZHE.biz_header_id AND(SZH.biz_modul_kod=1303 OR SZH.biz_modul_kod=1301 OR SZH.biz_modul_kod=1302)
+             AND SZH.lezarva=1 
+             AND SZH.kelte BETWEEN {1} AND {2} {3}
+             ) T
+
+GROUP BY cimsor, fiz_mod
+
+UNION
+
+SELECT Concat(cimsor,' ÖSSZESEN') as txt, cimsor as biztxt, fizmod as fmtxt, '' as szamla_szam, '' as felhasznalo_nev, '' as ugyfel_nev, '' as kelte, '' as hatarido, '' as fiz_mod,
+             sum(ossz_netto_ft) as szla_ertek_netto, sum(ossz_afa_ft) as szla_afa_ertek, sum(ossz_brutto_ft) as szla_ertek_brutto 
+             FROM (SELECT SZH.cimsor, SZH.sorszam, SZHE.munkatars_nev, SZHE.partner_nev, SZH.kelte, SZH.hatarido, SZH.fizmod, 
+             SZHE.ossz_netto_ft, SZHE.ossz_afa_ft, SZHE.ossz_brutto_ft 
+             FROM biz_header SZH, biz_header_ext SZHE 
+             WHERE SZH.id=SZHE.biz_header_id AND(SZH.biz_modul_kod=1303 OR SZH.biz_modul_kod=1301 OR SZH.biz_modul_kod=1302)
+             AND SZH.lezarva=1 
+             AND SZH.kelte BETWEEN {1} AND {2} {3}
+             ) T
+
+GROUP BY cimsor
+
+UNION
+
+SELECT 'MINDÖSSZESEN' as txt, 'ÖSSZESÍTÉS' as biztxt, 'SUMSUM' as fmtxt, '' as szamla_szam, '' as felhasznalo_nev, '' as ugyfel_nev, '' as kelte, '' as hatarido, '' as fiz_mod,
+             sum(szla_ertek_netto) as szla_ertek_netto, sum(szla_afa_ertek) as szla_afa_ertek, sum(szla_ertek_brutto) as szla_ertek_brutto
+             FROM (SELECT
+             If(SZH1.biz_modul_kod=1301, SZH2E.ossz_netto_ft, SZH1E.ossz_netto_ft) as szla_ertek_netto,
+             If(SZH1.biz_modul_kod=1301, SZH1E.ossz_afa_ft, SZH2E.ossz_afa_ft) as szla_afa_ertek,
+             If(SZH1.biz_modul_kod=1301, SZH2E.ossz_netto_ft+SZH1E.ossz_afa_ft, SZH1E.ossz_netto_ft+SZH2E.ossz_afa_ft) as szla_ertek_brutto
+             FROM biz_header SZH1, biz_header SZH2 , biz_header_ext SZH1E, biz_header_ext SZH2E
+             WHERE SZH2.id=SZH1.source_header_id AND SZH1.id=SZH1E.biz_header_id AND SZH2.id=SZH2E.biz_header_id
+             AND (SZH1.source_header_id is not null ) 
+             AND ((SZH1.biz_modul_kod=1301 AND SZH2.biz_modul_kod=1302) OR (SZH2.biz_modul_kod=1301 AND SZH1.biz_modul_kod=1302))
+             AND SZH1.lezarva = 1 AND SZH2.lezarva = 1
+             AND SZH1.kelte BETWEEN {1} AND {2} {3}
+             UNION
+             SELECT SZH1E.ossz_netto_ft, SZH1E.ossz_afa_ft, SZH1E.ossz_brutto_ft
+             FROM biz_header SZH, biz_header_ext SZH1E
+             WHERE SZH.id=SZH1E.biz_header_id AND ((SZH.source_header_id is null) AND SZH.id not in (select source_header_id from biz_header)
+             AND (SZH.biz_modul_kod=1301 OR SZH.biz_modul_kod=1302 OR SZH.biz_modul_kod=1303)
+             AND SZH.lezarva = 1)
+             AND SZH.kelte BETWEEN {1} AND {2} {3}
+              ) T
+              
+
+) T101 ORDER BY biztxt, fmtxt, txt desc, kelte

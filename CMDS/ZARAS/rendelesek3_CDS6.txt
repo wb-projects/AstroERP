@@ -1,0 +1,13 @@
+SELECT optic_item.*, partner.nev,
+ CASE WHEN elore_fizetve=1 THEN 'elõre' ELSE 'utólag' END fizido,
+ Round( (((egysegar-((optic_item.engedmeny/100)*egysegar))*mennyiseg)*(((select kulcs from afa where id=afa_id)/100)+1)) +0.001,0) as ossz_brutto,
+ (select rovid_nev from biz_settings where kod=optic_item.bizonylat_kod) bizonylat_tipus, 
+ 'kiadott' as allapot 
+ FROM optic_header, optic_item, partner
+ WHERE optic_item.optic_header_id=optic_header.id 
+ AND partner.id=optic_item.vevo_id 
+ AND optic_header.lezarva=1
+ AND optic_header.storno=0
+ AND ( date(optic_header.datum)='{2}' OR date(optic_header.datum_teljesitve)='{2}' )
+ AND telephely_id={1}
+ ORDER BY optic_item.optic_header_id, optic_item.id;

@@ -1,0 +1,65 @@
+select 
+
+sum(kulonbozet) kulonbozet,
+kelte_datum,
+coalesce(sum(bejovo),(sum(kimeno) / 1.15)) bejovo,
+coalesce(sum(kimeno),0) kimeno,
+(coalesce(sum(kimeno),0) / (coalesce(sum(bejovo),(sum(kimeno) / 1.15)) / 100)) - 100 szazalek_fel,
+100 - (coalesce(sum(bejovo),(sum(kimeno) / 1.15)) / (coalesce(sum(kimeno),0) / 100)) szazalek_le
+
+from 
+
+(select t1.* ,
+
+(select (sum(bi.egysegar) / sum(bi.mennyiseg)) * sum(bi.mennyiseg) ar_mennyiseg
+ from biz_header bh 
+left join biz_item bi on bi.biz_header_id = bh.id
+where (bh.raktar_id = {2}) and (DATE_FORMAT(bh.kelte, '%Y') = {1}) and bh.biz_modul_kod = 1204 and t1.arutorzs_id = bi.arutorzs_id and DATE_FORMAT(bh.kelte, '%m') = t1.kelte_datum) kimeno,
+
+(select (sum(bi.egysegar) / sum(bi.mennyiseg)) * (select sum(bi.mennyiseg)  from biz_header bh left join biz_item bi on bi.biz_header_id = bh.id where (bh.raktar_id = {2}) and (DATE_FORMAT(bh.kelte, '%Y') = {1}) and bh.biz_modul_kod = 1204 and t1.arutorzs_id = bi.arutorzs_id and DATE_FORMAT(bh.kelte, '%m') = t1.kelte_datum) ar_mennyiseg
+ from biz_header bh 
+left join biz_item bi on bi.biz_header_id = bh.id
+where (bh.raktar_id = {2}) and (DATE_FORMAT(bh.kelte, '%Y') = {1}) and bh.biz_modul_kod = 1203 and t1.arutorzs_id = bi.arutorzs_id and DATE_FORMAT(bh.kelte, '%m') = t1.kelte_datum) bejovo,
+
+
+(select (sum(bi.egysegar) / sum(bi.mennyiseg)) * sum(bi.mennyiseg) ar_mennyiseg
+ from biz_header bh 
+left join biz_item bi on bi.biz_header_id = bh.id
+where (bh.raktar_id = {2}) and (DATE_FORMAT(bh.kelte, '%Y') = {1}) and bh.biz_modul_kod = 1204 and t1.arutorzs_id = bi.arutorzs_id and DATE_FORMAT(bh.kelte, '%m') = t1.kelte_datum)
+
+-
+
+(select coalesce((sum(bi.egysegar) / sum(bi.mennyiseg)) * (select sum(bi.mennyiseg)  from biz_header bh left join biz_item bi on bi.biz_header_id = bh.id where (bh.raktar_id = {2}) and (DATE_FORMAT(bh.kelte, '%Y') = {1}) and bh.biz_modul_kod = 1204 and t1.arutorzs_id = bi.arutorzs_id and DATE_FORMAT(bh.kelte, '%m') = t1.kelte_datum),
+
+((select (sum(bi.egysegar) / sum(bi.mennyiseg)) * sum(bi.mennyiseg) ar_mennyiseg
+ from biz_header bh 
+left join biz_item bi on bi.biz_header_id = bh.id
+where (bh.raktar_id = {2}) and (DATE_FORMAT(bh.kelte, '%Y') = {1}) and bh.biz_modul_kod = 1204 and t1.arutorzs_id = bi.arutorzs_id and DATE_FORMAT(bh.kelte, '%m') = t1.kelte_datum) / 1.15)
+
+
+
+) ar_mennyiseg
+
+ from biz_header bh 
+left join biz_item bi on bi.biz_header_id = bh.id
+where (bh.raktar_id = {2}) and (DATE_FORMAT(bh.kelte, '%Y') = {1}) and bh.biz_modul_kod = 1203 and t1.arutorzs_id = bi.arutorzs_id and DATE_FORMAT(bh.kelte, '%m') = t1.kelte_datum)
+kulonbozet
+
+
+from
+
+(select 
+ distinct
+ bi.arutorzs_id, 
+DATE_FORMAT(bh.kelte, '%m') kelte_datum
+
+ from biz_header bh 
+left join biz_item bi on bi.biz_header_id = bh.id
+where 
+bh.biz_modul_kod = 1204
+and (bh.raktar_id = {2}) and (bi.arutorzs_id is not null) and (bi.arutorzs_id <> 0) and (DATE_FORMAT(bh.kelte, '%Y') = {1})
+
+group by bi.arutorzs_id, DATE_FORMAT(bh.kelte, '%m')) t1
+) t2
+group by kelte_datum
+order by kelte_datum

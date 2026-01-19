@@ -1,0 +1,65 @@
+select sum(ny_i.mennyiseg) mennyiseg ,munkaszam, arutorzs_id, at.teljes_megnevezes ,
+
+(select coalesce(sum(bi.mennyiseg),0) from biz_header bh
+left join biz_item bi on bi.biz_header_id = bh.id
+left join biz_settings bs on bs.kod = bh.biz_modul_kod
+where bs.sorszam_prefix = 'BSZAL' and munkaszam = ny_h.munkaszam) beerk,
+
+(select coalesce(sum(bi.mennyiseg),0) from biz_header bh
+left join biz_item bi on bi.biz_header_id = bh.id
+left join biz_settings bs on bs.kod = bh.biz_modul_kod
+where bs.sorszam_prefix = 'SZAL' and munkaszam = ny_h.munkaszam) kiszall,
+
+(select coalesce(sum(bi.mennyiseg),0) from biz_header bh
+left join biz_item bi on bi.biz_header_id = bh.id
+left join biz_settings bs on bs.kod = bh.biz_modul_kod
+where bs.sorszam_prefix = 'REND'and munkaszam = ny_h.munkaszam) megrend,
+
+(select cimsor from biz_header bh
+left join biz_item bi on bi.biz_header_id = bh.id
+where bh.munkaszam = ny_h.munkaszam and bi.arutorzs_id = ny_i.arutorzs_id) legut_esemeny,
+
+(select kelte from biz_header bh
+left join biz_item bi on bi.biz_header_id = bh.id
+where bh.munkaszam = ny_h.munkaszam and bi.arutorzs_id = ny_i.arutorzs_id) legut_datum,
+
+
+(select coalesce(sum(bi.mennyiseg),0) from biz_header bh
+left join biz_item bi on bi.biz_header_id = bh.id
+left join biz_settings bs on bs.kod = bh.biz_modul_kod
+where bs.sorszam_prefix = 'AJNL' and munkaszam = ny_h.munkaszam)
+
+-
+
+(select coalesce(sum(bi.mennyiseg),0) from biz_header bh
+left join biz_item bi on bi.biz_header_id = bh.id
+left join biz_settings bs on bs.kod = bh.biz_modul_kod
+where bs.sorszam_prefix = 'BSZAL'and munkaszam = ny_h.munkaszam) 
+
+mennyi_kell,
+
+
+(select coalesce(sum(bi.mennyiseg),0) from biz_header bh
+left join biz_item bi on bi.biz_header_id = bh.id
+left join biz_settings bs on bs.kod = bh.biz_modul_kod
+where bs.sorszam_prefix = 'REND'and munkaszam = ny_h.munkaszam) 
+
+-
+
+(select coalesce(sum(bi.mennyiseg),0) from biz_header bh
+left join biz_item bi on bi.biz_header_id = bh.id
+left join biz_settings bs on bs.kod = bh.biz_modul_kod
+where bs.sorszam_prefix = 'SZALL' and munkaszam = ny_h.munkaszam)
+
+
+kiszallitando
+
+
+
+
+
+
+from ny_item_view ny_i 
+left join ny_header_view ny_h on ny_i.ny_header_id = ny_h.id 
+left join arutorzs at on at.id = ny_i.arutorzs_id 
+group by munkaszam

@@ -1,0 +1,8 @@
+SELECT DISTINCT *
+ FROM szamla_header_except_mgr_view
+ WHERE 1=1
+ AND date(kelte)='{2}'
+ AND telephely_id={1}
+ AND lezarva=1
+ AND storno<>1 
+ ORDER BY biz_modul_kod, sorszam DESC;

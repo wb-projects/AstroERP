@@ -1,0 +1,6 @@
+SELECT biz_item.*,biz_item_ext.*
+  FROM biz_header, biz_item, biz_item_ext
+ WHERE     biz_item.biz_header_id = biz_header.id AND biz_item_ext.biz_item_id = biz_item.id 
+       AND biz_header.kelte BETWEEN {1} AND {2} {3} AND
+          biz_header.biz_modul_kod = {4} AND biz_header.lezarva = 1
+ORDER BY biz_header.sorszam, biz_item_ext.afakulcs

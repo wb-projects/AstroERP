@@ -1,0 +1,10 @@
+SELECT
+ penzmozgasok.*, pmozgasnemek.pmozg_nev, pmozgasnemek.bevetel_kiadas, (select nev from partner where id=penzmozgasok.partner_id) as partner_nev
+ FROM penzmozgasok, pmozgasnemek
+ WHERE penzmozgasok.pmozgasnem_id=pmozgasnemek.id
+ AND date(penzmozgasok.kelte)='{2}'
+ AND (select telephely_id from penztar where id=penzmozgasok.penztar_id)={1}   /*AND telephely_id={1}*/
+ AND penzmozgasok.tipus='PÉNZTÁR'
+ AND pmozgasnemek.bevetel_kiadas='Kiadás'
+ AND pmozgasnem_id='22'
+ ORDER BY penzmozgasok.sorszam;

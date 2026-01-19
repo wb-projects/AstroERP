@@ -1,0 +1,164 @@
+[QUERY]
+select=SELECT partner.id,
+from=FROM partner
+where=WHERE partner.kod<>0 
+groupby=
+defaultorderbyfields=kod
+
+[FIELD0]
+expression=partner.kod  
+fieldname=kod
+titlecaption=Vevõkód
+width=80
+visible=1
+aggregate=2
+datatype=integer
+
+[FIELD1]
+expression=partner.nev  
+fieldname=nev
+titlecaption=Név
+width=295
+visible=1
+aggregate=0
+datatype=varchar
+
+[FIELD2]
+expression=CONCAT(Coalesce(partner.irsz,''),' ',Coalesce(partner.helyseg,''),' ',Coalesce(partner.utca,''),' ',Coalesce(partner.hsz,''),' ',Coalesce(partner.lepcsohaz,''),' ',Coalesce(partner.emelet,''),' ',Coalesce(partner.ajto,''))
+fieldname=cim
+titlecaption=Cím (számlázási)
+width=150
+visible=1
+aggregate=0
+datatype=varchar
+
+[FIELD3]
+expression=CONCAT(Coalesce(partner.p_irsz,''),' ',Coalesce(partner.p_helyseg,''),' ',Coalesce(partner.p_utca,''),' ',Coalesce(partner.p_hsz,''),' ',Coalesce(partner.p_lepcsohaz,''),' ',Coalesce(partner.p_emelet,''),' ',Coalesce(partner.p_ajto,''))
+fieldname=p_cim
+titlecaption=Cím (postai)
+width=150
+visible=1
+aggregate=0
+datatype=varchar
+
+[FIELD4]
+expression=partner.telfax  
+fieldname=telfax
+titlecaption=Tel./Fax.
+width=200
+visible=1
+aggregate=0
+datatype=varchar
+
+[FIELD5]
+expression=partner.adoszam  
+fieldname=adoszam
+titlecaption=Adószám
+width=95
+visible=1
+aggregate=0
+datatype=varchar
+
+[FIELD6]
+expression=partner.tipus  
+fieldname=tipus
+titlecaption=Partnertípus
+width=90
+visible=1
+aggregate=0
+datatype=varchar
+
+[FIELD7]
+expression=partner.ugyfeltipus  
+fieldname=ugyfeltipus
+titlecaption=Ügyféltipus
+width=250
+visible=1
+aggregate=0
+datatype=varchar
+
+[FIELD8]
+expression=partner.kontakt  
+fieldname=kontaktszemely
+titlecaption=Kapcsolattartó
+width=250
+visible=1
+aggregate=0
+datatype=varchar
+
+[FIELD9]
+expression=partner.email  
+fieldname=email
+titlecaption=E-mail cím
+width=250
+visible=1
+aggregate=0
+datatype=varchar
+
+[FIELD10]
+expression=coalesce((Select sum(ossz_brutto) From biz_header, biz_header_ext Where biz_header_ext.biz_header_id=biz_header.id And lezarva=1 And biz_header.biz_modul_kod=1301 And partner_id=partner.id),0)
+fieldname=szlaosszbrutto
+titlecaption=Számla össz.
+width=135
+visible=1
+aggregate=1
+datatype=integer
+
+[FIELD11]
+expression=coalesce((Select sum(ossz_brutto) From biz_header, biz_header_ext Where biz_header_ext.biz_header_id=biz_header.id And lezarva=1 And biz_header.biz_modul_kod=1302 And partner_id=partner.id),0)
+fieldname=szalosszbrutto
+titlecaption=Száll. össz.
+width=135
+visible=1
+aggregate=1
+datatype=integer
+
+[FIELD12]
+expression=coalesce((Select sum(ossz_brutto) From biz_header, biz_header_ext Where biz_header_ext.biz_header_id=biz_header.id And lezarva=1 And biz_header.biz_modul_kod=1306 And partner_id=partner.id),0)
+fieldname=arvosszbrutto
+titlecaption=Árvetés össz.
+width=135
+visible=1
+aggregate=1
+datatype=integer
+
+[FIELD13]
+expression=coalesce((Select sum(ossz_brutto) From biz_header, biz_header_ext Where biz_header_ext.biz_header_id=biz_header.id And lezarva=1 And biz_header.biz_modul_kod=1303 And partner_id=partner.id),0)
+fieldname=nyugosszbrutto
+titlecaption=Nyugta össz.
+width=135
+visible=1
+aggregate=1
+datatype=integer
+
+
+
+
+
+
+[FIELD24]
+expression=coalesce((SELECT sum(szla_ertek_brutto) FROM szamla_header WHERE statusz='lezárva' AND partner_kod=partner.kod and id=getmainbizid(id)),0)
+fieldname=osszvasarlasa
+titlecaption=Összes vásárlása
+width=135
+visible=1
+aggregate=1
+datatype=integer
+
+[FIELD25]
+expression=coalesce((SELECT sum(CalcHatralek(id)) FROM szamla_header WHERE statusz='lezárva' AND partner_kod=partner.kod and id=getmainbizid(id)),0)
+fieldname=ossztartozasa
+titlecaption=Összes tartozása
+width=135
+visible=1
+aggregate=1
+datatype=integer
+
+[FIELD26]
+expression=coalesce((SELECT sum(CalcHatralek(id)) FROM szamla_header WHERE statusz='lezárva' AND partner_kod=partner.kod and hatarido<now() and id=getmainbizid(id)),0)
+fieldname=lejarttartozasa
+titlecaption=Lejárt tartozása
+width=135
+visible=1
+aggregate=1
+datatype=integer

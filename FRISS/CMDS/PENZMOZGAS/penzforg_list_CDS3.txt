@@ -1,0 +1,7 @@
+select pm.kelte, (pm.osszeg * pm.arfolyam) vosszeg, concat(concat(concat(pm.tipus,coalesce(penztarnev,'')),coalesce(banknev,'')),coalesce(bankszamlaszam,'')) nevtype, par.nev partner_nev, m.nev munkatars_nev, pmn.pmozg_nev from penzmozgasok pm
+left join penztar p on p.id = pm.penztar_id
+left join bankszamla b on b.id = pm.bankszamla_id
+left join partner par on par.id = pm.partner_id
+left join munkatarsak m on m.id = pm.munkatars_id
+left join pmozgasnemek pmn on pmn.id = pm.pmozgasnem_id
+where pm.kelte BETWEEN {1} AND {2}

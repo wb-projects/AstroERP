@@ -1,0 +1,39 @@
+﻿SELECT *
+FROM (
+SELECT arutorzs.id, -1 as arkat_kod, 'Utolsó vétel / Last buy' as arkat_nev, IFNull((SELECT egysegar FROM biz_item, biz_header WHERE biz_item.biz_header_id=biz_header.id AND biz_header.biz_modul_kod=1203 AND arutorzs_id=:ARUTORZS_ID ORDER BY biz_item.id Desc LIMIT 1),0) as ear_netto, round(IFNull((SELECT egysegar FROM biz_item, biz_header WHERE biz_item.biz_header_id=biz_header.id AND ( biz_header.biz_modul_kod=1203 OR left(biz_header.biz_modul_kod,2)=14 ) AND arutorzs_id=:ARUTORZS_ID ORDER BY biz_item.id Desc LIMIT 1),0) * (1+(afa.kulcs/100)),2) as ear_brutto, (SELECT penznem FROM biz_item, biz_header WHERE biz_item.biz_header_id=biz_header.id AND ( biz_header.biz_modul_kod=1203 OR left(biz_header.biz_modul_kod,2)=14 ) AND arutorzs_id=:ARUTORZS_ID ORDER BY biz_item.id Desc LIMIT 1) as penznem FROM arutorzs, afa WHERE afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, -4 as arkat_kod, 'Utolsó eladás / Last sell' as arkat_nev, IFNull((SELECT egysegar FROM biz_item, biz_header WHERE biz_item.biz_header_id=biz_header.id AND biz_header.biz_modul_kod=1204 AND arutorzs_id=:ARUTORZS_ID ORDER BY biz_item.id Desc LIMIT 1),0) as ear_netto, round(IFNull((SELECT egysegar FROM biz_item, biz_header WHERE biz_item.biz_header_id=biz_header.id AND ( biz_header.biz_modul_kod=1204 OR left(biz_header.biz_modul_kod,2)=13 ) AND arutorzs_id=:ARUTORZS_ID ORDER BY biz_item.id Desc LIMIT 1),0) * (1+(afa.kulcs/100)),2) as ear_brutto, (SELECT penznem FROM biz_item, biz_header WHERE biz_item.biz_header_id=biz_header.id AND ( biz_header.biz_modul_kod=1204 OR left(biz_header.biz_modul_kod,2)=13 ) AND arutorzs_id=:ARUTORZS_ID ORDER BY biz_item.id Desc LIMIT 1) as penznem FROM arutorzs, afa WHERE afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 0 as arkat_kod, arkat_0_nev as arkat_nev, arkat_0_netto as ear_netto, round(arkat_0_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_0_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 1 as arkat_kod, arkat_1_nev as arkat_nev, arkat_1_netto as ear_netto, round(arkat_1_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_1_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 2 as arkat_kod, arkat_2_nev as arkat_nev, arkat_2_netto as ear_netto, round(arkat_2_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_2_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 3 as arkat_kod, arkat_3_nev as arkat_nev, arkat_3_netto as ear_netto, round(arkat_3_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_3_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 4 as arkat_kod, arkat_4_nev as arkat_nev, arkat_4_netto as ear_netto, round(arkat_4_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_4_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 5 as arkat_kod, arkat_5_nev as arkat_nev, arkat_5_netto as ear_netto, round(arkat_5_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_5_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 6 as arkat_kod, arkat_6_nev as arkat_nev, arkat_6_netto as ear_netto, round(arkat_6_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_6_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 7 as arkat_kod, arkat_7_nev as arkat_nev, arkat_7_netto as ear_netto, round(arkat_7_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_7_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 8 as arkat_kod, arkat_8_nev as arkat_nev, arkat_8_netto as ear_netto, round(arkat_8_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_8_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 9 as arkat_kod, arkat_9_nev as arkat_nev, arkat_9_netto as ear_netto, round(arkat_9_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_9_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 10 as arkat_kod, arkat_10_nev as arkat_nev, arkat_10_netto as ear_netto, round(arkat_10_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_10_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 11 as arkat_kod, arkat_11_nev as arkat_nev, arkat_11_netto as ear_netto, round(arkat_11_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_11_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 12 as arkat_kod, arkat_12_nev as arkat_nev, arkat_12_netto as ear_netto, round(arkat_12_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_12_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 13 as arkat_kod, arkat_13_nev as arkat_nev, arkat_13_netto as ear_netto, round(arkat_13_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_13_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 14 as arkat_kod, arkat_14_nev as arkat_nev, arkat_14_netto as ear_netto, round(arkat_14_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_14_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+UNION
+SELECT arutorzs.id, 15 as arkat_kod, arkat_15_nev as arkat_nev, arkat_15_netto as ear_netto, round(arkat_15_netto * (1+(afa.kulcs/100)),2) as ear_brutto, arkat_15_penznem as penznem FROM arutorzs, arkategoriak, afa WHERE arkategoriak.arutorzs_id=arutorzs.id AND afa.id=arutorzs.afa_id AND arutorzs.id=:ARUTORZS_ID
+) T  
+-- WHERE arkat_nev<>''

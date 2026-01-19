@@ -1,0 +1,85 @@
+Select
+
+
+
+(SELECT  coalesce(sum(ossz_beszerzesi_ar),0) as 2_es_raktar  FROM 
+  (
+  
+  SELECT
+
+  (Select coalesce(sum(keszlet),0) from arukeszlet where arukeszlet.arutorzs_id=AT.id and arukeszlet.keszlet<>0 and arukeszlet.raktar_id in (select id from raktar where tipus=0 and archiv=0) ) as keszlet,
+  
+  (Select coalesce(avg(be_ar_netto),0) from arukeszlet where arukeszlet.arutorzs_id=AT.id and arukeszlet.keszlet<>0 and arukeszlet.raktar_id in (select id from raktar where tipus=0 and archiv=0) )
+  *
+  ((afa.kulcs / 100 )+1)
+  *
+  (Select coalesce(sum(keszlet),0) from arukeszlet where arukeszlet.arutorzs_id=AT.id and arukeszlet.keszlet<>0 and arukeszlet.raktar_id in (select id from raktar where tipus=0 and archiv=0) ) 
+  as ossz_beszerzesi_ar
+  
+  FROM arutorzs AT, afa  WHERE afa.id=AT.afa_id  HAVING keszlet<>0  ORDER BY AT.teljes_megnevezes
+    
+  ) T 
+) normal, /* ahol a raktár típusa normál és nem archiv */
+
+
+
+(SELECT  coalesce(sum(ossz_beszerzesi_ar),0) as 2_es_raktar  FROM 
+  (
+  
+  SELECT
+
+  (Select coalesce(sum(keszlet),0) from arukeszlet where arukeszlet.arutorzs_id=AT.id and arukeszlet.keszlet<>0 and arukeszlet.raktar_id in (select id from raktar where tipus=3 and archiv=0) ) as keszlet,
+  
+  (Select coalesce(avg(be_ar_netto),0) from arukeszlet where arukeszlet.arutorzs_id=AT.id and arukeszlet.keszlet<>0 and arukeszlet.raktar_id in (select id from raktar where tipus=3 and archiv=0) )
+  *
+  ((afa.kulcs / 100 )+1)
+  *
+  (Select coalesce(sum(keszlet),0) from arukeszlet where arukeszlet.arutorzs_id=AT.id and arukeszlet.keszlet<>0 and arukeszlet.raktar_id in (select id from raktar where tipus=3 and archiv=0) ) 
+  as ossz_beszerzesi_ar
+  
+  FROM arutorzs AT, afa  WHERE afa.id=AT.afa_id  HAVING keszlet<>0  ORDER BY AT.teljes_megnevezes
+    
+  ) T 
+) selejt, /* ahol a raktár típusa selejt és nem archiv (boltok selejt árui néven volt korábban) */
+
+
+
+(SELECT  coalesce(sum(ossz_beszerzesi_ar),0) as 2_es_raktar  FROM 
+  (
+  
+  SELECT
+
+  (Select coalesce(sum(keszlet),0) from arukeszlet where arukeszlet.arutorzs_id=AT.id and arukeszlet.keszlet<>0 and arukeszlet.raktar_id in (select id from raktar where tipus=0 and archiv=1) ) as keszlet,
+  
+  (Select coalesce(avg(be_ar_netto),0) from arukeszlet where arukeszlet.arutorzs_id=AT.id and arukeszlet.keszlet<>0 and arukeszlet.raktar_id in (select id from raktar where tipus=0 and archiv=1) )
+  *
+  ((afa.kulcs / 100 )+1)
+  *
+  (Select coalesce(sum(keszlet),0) from arukeszlet where arukeszlet.arutorzs_id=AT.id and arukeszlet.keszlet<>0 and arukeszlet.raktar_id in (select id from raktar where tipus=0 and archiv=1) ) 
+  as ossz_beszerzesi_ar
+  
+  FROM arutorzs AT, afa  WHERE afa.id=AT.afa_id  HAVING keszlet<>0  ORDER BY AT.teljes_megnevezes
+    
+  ) T 
+) normal_archiv, /* ahol a raktár típusa normál és archiv (másodlagos raktár néven volt korábban) */
+
+
+
+(SELECT  coalesce(sum(ossz_beszerzesi_ar),0) as 2_es_raktar  FROM 
+  (
+  
+  SELECT
+
+  (Select coalesce(sum(keszlet),0) from arukeszlet where arukeszlet.arutorzs_id=AT.id and arukeszlet.keszlet<>0 and arukeszlet.raktar_id in (select id from raktar where tipus=3 and archiv=1) ) as keszlet,
+  
+  (Select coalesce(avg(be_ar_netto),0) from arukeszlet where arukeszlet.arutorzs_id=AT.id and arukeszlet.keszlet<>0 and arukeszlet.raktar_id in (select id from raktar where tipus=3 and archiv=1) )
+  *
+  ((afa.kulcs / 100 )+1)
+  *
+  (Select coalesce(sum(keszlet),0) from arukeszlet where arukeszlet.arutorzs_id=AT.id and arukeszlet.keszlet<>0 and arukeszlet.raktar_id in (select id from raktar where tipus=3 and archiv=1) ) 
+  as ossz_beszerzesi_ar
+  
+  FROM arutorzs AT, afa  WHERE afa.id=AT.afa_id  HAVING keszlet<>0  ORDER BY AT.teljes_megnevezes
+    
+  ) T 
+) selejt_archiv /* ahol a raktár típusa selejt és archiv */

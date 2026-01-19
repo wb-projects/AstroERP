@@ -1,0 +1,8 @@
+select pm.fiz_mod, sum(pm.osszeg * pm.arfolyam) ertek
+from 
+penzmozgasok pm 
+left join penztar p on p.id = pm.penztar_id
+left join bankszamla b on b.id = pm.bankszamla_id
+where pm.bizonylat_header_id in (select id from biz_header where biz_modul_kod = 1303 AND kelte BETWEEN {1} AND {2} {3})
+group by pm.fiz_mod
+order by tipus

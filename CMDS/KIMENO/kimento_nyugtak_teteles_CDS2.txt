@@ -1,0 +1,4 @@
+    SELECT szamla_items.* 
+      FROM szamla_header, szamla_items 
+      WHERE szamla_items.szamla_szam=szamla_header.szamla_szam AND szamla_header.kelte BETWEEN {1} AND {2}
+      AND szamla_header.tipus LIKE 'NYUGTA' ORDER BY szamla_items.szamla_szam, szamla_items.afa

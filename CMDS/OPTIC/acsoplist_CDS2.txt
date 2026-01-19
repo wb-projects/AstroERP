@@ -1,0 +1,77 @@
+SELECT DISTINCT DATE(BH.kelte) as kelte,  
+
+     (SELECT sum(biz_item_ext.ossz_brutto_ft) FROM biz_header, biz_item, biz_item_ext, arutorzs, arucsop_view  
+     WHERE arutorzs.arucsop_id=arucsop_view.id  
+     AND arutorzs.id=biz_item.arutorzs_id  
+     AND biz_item.biz_header_id=biz_header.id  
+     AND biz_item_ext.biz_item_id=biz_item.id  
+     AND arucsop_view.focsop_kod=  27    
+     AND biz_header.kelte=DATE(BH.kelte) GROUP BY DATE(BH.kelte) )  
+     as ossz27,  
+
+     (SELECT sum(biz_item_ext.ossz_brutto_ft) FROM biz_header, biz_item, biz_item_ext, arutorzs, arucsop_view  
+     WHERE arutorzs.arucsop_id=arucsop_view.id  
+     AND arutorzs.id=biz_item.arutorzs_id  
+     AND biz_item.biz_header_id=biz_header.id  
+     AND biz_item_ext.biz_item_id=biz_item.id  
+     AND arucsop_view.focsop_kod=  28    
+     AND biz_header.kelte=DATE(BH.kelte) GROUP BY DATE(BH.kelte) )  
+     as ossz28,  
+
+     (SELECT sum(biz_item_ext.ossz_brutto_ft) FROM biz_header, biz_item, biz_item_ext, arutorzs, arucsop_view  
+     WHERE arutorzs.arucsop_id=arucsop_view.id  
+     AND arutorzs.id=biz_item.arutorzs_id  
+     AND biz_item.biz_header_id=biz_header.id  
+     AND biz_item_ext.biz_item_id=biz_item.id  
+     AND arucsop_view.focsop_kod=  29    
+     AND biz_header.kelte=DATE(BH.kelte) GROUP BY DATE(BH.kelte) )  
+     as ossz29,  
+
+     (SELECT sum(biz_item_ext.ossz_brutto_ft) FROM biz_header, biz_item, biz_item_ext, arutorzs, arucsop_view  
+     WHERE arutorzs.arucsop_id=arucsop_view.id  
+     AND arutorzs.id=biz_item.arutorzs_id  
+     AND biz_item.biz_header_id=biz_header.id  
+     AND biz_item_ext.biz_item_id=biz_item.id  
+     AND arucsop_view.focsop_kod=  30    
+     AND biz_header.kelte=DATE(BH.kelte) GROUP BY DATE(BH.kelte) )  
+     as ossz30,  
+
+     (SELECT sum(biz_item_ext.ossz_brutto_ft) FROM biz_header, biz_item, biz_item_ext, arutorzs, arucsop_view  
+     WHERE arutorzs.arucsop_id=arucsop_view.id  
+     AND arutorzs.id=biz_item.arutorzs_id  
+     AND biz_item.biz_header_id=biz_header.id  
+     AND biz_item_ext.biz_item_id=biz_item.id  
+     AND arucsop_view.focsop_kod=  32   
+     AND biz_header.kelte=DATE(BH.kelte) GROUP BY DATE(BH.kelte) )  
+     as ossz32,  
+
+     (SELECT sum(biz_item_ext.ossz_brutto_ft) FROM biz_header, biz_item, biz_item_ext, arutorzs, arucsop_view  
+     WHERE arutorzs.arucsop_id=arucsop_view.id  
+     AND arutorzs.id=biz_item.arutorzs_id  
+     AND biz_item.biz_header_id=biz_header.id  
+     AND biz_item_ext.biz_item_id=biz_item.id  
+     AND arucsop_view.focsop_kod=  31    
+     AND biz_header.kelte=DATE(BH.kelte) GROUP BY DATE(BH.kelte) )  
+     as ossz31,  
+
+     (SELECT sum(biz_item_ext.ossz_brutto_ft) FROM biz_header, biz_item, biz_item_ext, arutorzs, arucsop_view  
+     WHERE arutorzs.arucsop_id=arucsop_view.id  
+     AND arutorzs.id=biz_item.arutorzs_id  
+     AND biz_item.biz_header_id=biz_header.id  
+     AND biz_item_ext.biz_item_id=biz_item.id  
+     AND arucsop_view.focsop_kod=  0    
+     AND biz_header.kelte=DATE(BH.kelte) GROUP BY DATE(BH.kelte) )  
+     as ossz0,  
+
+     (SELECT  sum(biz_item_ext.ossz_brutto_ft) FROM biz_header, biz_item, biz_item_ext  
+     WHERE biz_item.biz_header_id=biz_header.id  
+     AND biz_item_ext.biz_item_id=biz_item.id  
+     AND biz_header.kelte=DATE(BH.kelte) GROUP BY DATE(BH.kelte) )  
+     as osszx  
+
+     FROM biz_header BH  
+     WHERE BH.kelte BETWEEN  /*1*/  AND  /*2*/  
+     AND BH.lezarva=1    
+     GROUP BY DATE(BH.kelte)  
+     ORDER BY DATE(BH.kelte)  ;
+	 

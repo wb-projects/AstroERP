@@ -1,0 +1,21 @@
+SELECT
+MO.actual_month AS actual_month, 
+Max(M.production_unit) AS production_unit,
+Sum(ML.working_time/60) AS working_time_month,
+Sum(ML.produced_quantity) AS produced_quantity_month,
+Sum((ML.working_time/60)/ML.produced_quantity) AS productivity_month,
+Max(M.production_target_month) AS production_target_month,
+( (Sum(ML.working_time/60)/Sum(ML.produced_quantity)) / Max(M.production_target_month) ) * 100 AS efficiency_month,
+100
+FROM 
+
+(select (t*10+u+1) actual_month from
+(select 0 t union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) A,
+(select 0 u union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) B
+where (t*10+u+1)<13
+order by actual_month) MO
+
+LEFT OUTER JOIN machines M ON M.id=:machine_id
+LEFT OUTER JOIN machine_log ML ON ML.machine_id=M.id AND MO.actual_month=MONTH(ML.work_date) AND YEAR(ML.work_date)=:year
+GROUP BY MO.actual_month
+ORDER BY MO.actual_month

@@ -1,0 +1,48 @@
+select (@cnt := @cnt + 1) as ssz,
+ pm.tipus,pm.id,pm.kelte, pm.sorszam,
+ (select Abs(sum(osszeg * arfolyam)) from penzmozgasok where tipus='BANK' AND id <= pm.id AND pm.kelte BETWEEN {1} AND {2}) bank_egyenleg,
+ (select Abs(sum(osszeg * arfolyam)) from penzmozgasok where tipus<>'BANK' AND id <= pm.id AND pm.kelte BETWEEN {1} AND {2}) penzt_egyenleg, 
+ case
+   when pm.tipus='BANK' then     
+     case
+       when (pm.osszeg * pm.arfolyam) > 0 then
+         Abs((pm.osszeg * pm.arfolyam))
+       else  
+         null
+     end  
+ end bank_bev,
+ case
+   when pm.tipus='BANK' then     
+     case
+       when (pm.osszeg * pm.arfolyam) < 0 then
+         Abs((pm.osszeg * pm.arfolyam))
+       else  
+         null
+     end  
+ end bank_kiad,
+ case
+   when pm.tipus<>'BANK' then     
+     case
+       when (pm.osszeg * pm.arfolyam) > 0 then
+         Abs((pm.osszeg * pm.arfolyam))
+       else  
+         null
+     end  
+ end penzt_bev,
+ case
+   when pm.tipus<>'BANK' then     
+     case
+       when (pm.osszeg * pm.arfolyam) < 0 then
+         Abs((pm.osszeg * pm.arfolyam))
+       else  
+         null
+     end  
+ end penzt_kiad,
+ pmn.pmozg_nev, bh.sorszam bhsorsz, pm.penztar_bank_bizonylatszam, 
+ concat(concat(concat(concat(coalesce(pmn.pmozg_nev,''),' '),coalesce(bh.sorszam,'')),' '),coalesce(pm.penztar_bank_bizonylatszam,'')) szoveg
+from penzmozgasok pm
+left join pmozgasnemek pmn on pm.pmozgasnem_id = pmn.id
+left join biz_header bh on pm.bizonylat_header_id = bh.id
+CROSS JOIN (SELECT @cnt := 0) AS dummy
+WHERE pm.kelte BETWEEN {1} AND {2}
+order by pm.id

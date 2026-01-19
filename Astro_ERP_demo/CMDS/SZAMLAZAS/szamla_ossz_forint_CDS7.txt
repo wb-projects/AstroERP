@@ -1,0 +1,5 @@
+SELECT
+ossz_netto_ft as ossz_ertek_netto,
+ossz_brutto_ft as ossz_ertek_brutto,
+ossz_afa_ft as ossz_afa_osszeg
+FROM biz_header_ext WHERE biz_header_id='{1}'

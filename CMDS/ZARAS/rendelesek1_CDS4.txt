@@ -1,0 +1,67 @@
+SELECT
+ sum(eloleg_brutto) as sum_eloleg,
+ sum(utolag_brutto) as sum_utolag,
+ sum(osszesen_brutto) as sum_osszesen,
+
+ (SELECT COALESCE(sum(  Round( (((egysegar-((engedmeny/100)*egysegar))*mennyiseg)*(((select kulcs from afa where id=afa_id)/100)+1)) +0.001,0) ),0)
+  FROM optic_header, optic_item
+  WHERE optic_item.optic_header_id=optic_header.id
+  AND optic_item.fiz_mod='KÉSZPÉNZ'
+  AND optic_item.elore_fizetve=1
+  AND optic_header.lezarva=1
+  AND optic_header.storno=0
+  AND date(optic_header.datum)='{2}'
+  AND telephely_id={1}
+ ) as kp_ossz,
+
+ (SELECT COALESCE(sum( Round( (((egysegar-((engedmeny/100)*egysegar))*mennyiseg)*(((select kulcs from afa where id=afa_id)/100)+1)) +0.001,0) ),0) FROM optic_header, optic_item
+  WHERE optic_item.optic_header_id=optic_header.id
+  AND optic_header.lezarva=1
+  AND optic_header.storno=0
+  AND date(optic_header.datum)='{2}'
+  AND telephely_id={1}
+  AND optic_item.elore_fizetve=1
+  AND optic_item.fiz_mod<>'KÉSZPÉNZ' 
+ ) as utal_ossz,
+
+ 'felvett' as allapot
+ FROM optic_header 
+ WHERE lezarva=1
+ AND storno=0
+ AND date(datum)='{2}'
+ AND telephely_id={1}
+
+UNION
+
+SELECT
+ sum(eloleg_brutto) as sum_eloleg,
+ sum(utolag_brutto) as sum_utolag,
+ sum(osszesen_brutto) as sum_osszesen,
+
+ (SELECT COALESCE(sum(  Round( (((egysegar-((engedmeny/100)*egysegar))*mennyiseg)*(((select kulcs from afa where id=afa_id)/100)+1)) +0.001,0) ),0)
+  FROM optic_header, optic_item
+  WHERE optic_item.optic_header_id=optic_header.id
+  AND optic_item.fiz_mod='KÉSZPÉNZ'
+  AND optic_item.elore_fizetve=0
+  AND optic_header.lezarva=1
+  AND optic_header.storno=0
+  AND date(optic_header.datum_teljesitve)='{2}'
+  AND telephely_id={1}
+ ) as kp_ossz,
+
+ (SELECT COALESCE(sum( Round( (((egysegar-((engedmeny/100)*egysegar))*mennyiseg)*(((select kulcs from afa where id=afa_id)/100)+1)) +0.001,0) ),0) FROM optic_header, optic_item
+  WHERE optic_item.optic_header_id=optic_header.id
+  AND optic_header.lezarva=1
+  AND optic_header.storno=0
+  AND date(optic_header.datum_teljesitve)='{2}'
+  AND telephely_id={1}
+  AND optic_item.elore_fizetve=0
+  AND optic_item.fiz_mod<>'KÉSZPÉNZ' 
+ ) as utal_ossz,
+
+ 'teljesített' as allapot
+ FROM optic_header
+ WHERE lezarva=1
+ AND storno=0
+ AND date(datum_teljesitve)='{2}'
+AND telephely_id={1} ;

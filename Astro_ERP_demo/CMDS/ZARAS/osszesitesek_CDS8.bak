@@ -1,0 +1,162 @@
+SELECT
+
+ ( SELECT nyito FROM zarasok WHERE datum='{2}' ) as nyito_kassza,
+
+
+
+ ( SELECT COALESCE(sum(szla_ertek_brutto),0) FROM szamla_header_except_mgr_view
+ WHERE 1=1
+ AND kelte='{2}'
+ AND lezarva=1
+ AND fizmod='KÉSZPÉNZ'
+ AND storno<>1
+)
+ +
+ (SELECT COALESCE(sum(eloleg),0) from optic_header
+  WHERE optic_header.statusz<>'LEZÁRATLAN'
+  AND optic_header.statusz<>'STORNÓ'
+  AND optic_header.datum='{2}'
+ ) -
+ (SELECT COALESCE(sum((optic_item.ertek_brutto-( (optic_item.engedmeny/100)*optic_item.ertek_brutto))),0)
+  FROM optic_header, optic_item
+  WHERE optic_item.optic_header_kod=optic_header.kod
+  AND optic_item.fiz_mod<>'KÉSZPÉNZ'
+  AND optic_item.elorefizet='IGEN'
+  AND optic_header.statusz<>'LEZÁRATLAN'
+  AND optic_header.statusz<>'STORNÓ'
+  AND optic_header.datum='{2}'
+ )
+ +
+ (select COALESCE(sum(utolag),0) from optic_header
+  WHERE optic_header.statusz<>'LEZÁRATLAN'
+  AND optic_header.statusz<>'STORNÓ'
+  AND optic_header.datum_kesz='{2}'
+ ) - (SELECT COALESCE(sum((optic_item.ertek_brutto-( (optic_item.engedmeny/100)*optic_item.ertek_brutto))),0)
+  FROM optic_header, optic_item
+  WHERE optic_item.optic_header_kod=optic_header.kod
+  AND optic_item.fiz_mod<>'KÉSZPÉNZ'
+  AND optic_item.elorefizet='NEM'
+  AND optic_header.statusz<>'LEZÁRATLAN'
+  AND optic_header.statusz<>'STORNÓ'
+  AND optic_header.datum_kesz='{2}' 
+ ) AS kp_full,
+
+
+
+ ( SELECT COALESCE(sum(szla_ertek_brutto),0) FROM szamla_header_except_mgr_view
+ WHERE 1=1
+ AND kelte='{2}'
+ AND lezarva=1
+ AND fizmod<>'KÉSZPÉNZ'
+ AND storno<>1
+ )
+ +
+ (SELECT COALESCE(sum((optic_item.ertek_brutto-( (optic_item.engedmeny/100)*optic_item.ertek_brutto))),0)
+  FROM optic_header, optic_item
+  WHERE optic_item.optic_header_kod=optic_header.kod
+  AND optic_item.fiz_mod<>'KÉSZPÉNZ'
+  AND optic_item.elorefizet='IGEN'
+  AND optic_header.statusz<>'LEZÁRATLAN'
+  AND optic_header.statusz<>'STORNÓ'
+  AND optic_header.datum='{2}'
+ )
+ +
+ (SELECT COALESCE(sum((optic_item.ertek_brutto-( (optic_item.engedmeny/100)*optic_item.ertek_brutto))),0)
+  FROM optic_header, optic_item
+  WHERE optic_item.optic_header_kod=optic_header.kod
+  AND optic_item.fiz_mod<>'KÉSZPÉNZ'
+  AND optic_item.elorefizet='NEM'
+  AND optic_header.statusz<>'LEZÁRATLAN'
+  AND optic_header.statusz<>'STORNÓ'
+  AND optic_header.datum_kesz='{2}'
+ ) AS utal_full,
+
+
+
+ ( SELECT COALESCE(sum(szla_ertek_brutto),0) FROM szamla_header_except_mgr_view
+ WHERE 1=1
+ AND kelte='{2}'
+ AND lezarva=1
+ AND storno<>1
+ )
+ +
+ (SELECT COALESCE(sum(eloleg),0) from optic_header
+  WHERE optic_header.statusz<>'LEZÁRATLAN'
+  AND optic_header.statusz<>'STORNÓ'
+  AND optic_header.datum='{2}'
+ )
+ +
+ (select COALESCE(sum(utolag),0) from optic_header
+  WHERE optic_header.statusz<>'LEZÁRATLAN'
+  AND optic_header.statusz<>'STORNÓ'
+  AND optic_header.datum_kesz='{2}'
+ ) AS all_full,
+
+
+
+ (SELECT
+  COALESCE(sum(penzmozgasok.osszeg),0) FROM penzmozgasok, pmozgasnemek
+  WHERE penzmozgasok.pmozgasnem_id=pmozgasnemek.id
+  AND penzmozgasok.kelte='{2}'
+  AND penzmozgasok.tipus='PÉNZTÁR'
+  AND pmozgasnemek.bevetel_kiadas='Kiadás'
+  AND pmozgasnem_id='22'
+  ORDER BY penzmozgasok.sorszam ) AS kp_kiadasok,
+
+
+
+ ( SELECT nyito FROM zarasok WHERE datum='{2}' )
+ +
+ ( SELECT COALESCE(sum(szla_ertek_brutto),0) FROM szamla_header_except_mgr_view
+ WHERE 1=1
+ AND kelte='{2}'
+ AND lezarva=1
+ AND fizmod='KÉSZPÉNZ'
+ AND storno<>1
+ )
+ +
+ (SELECT COALESCE(sum(eloleg),0) from optic_header
+  WHERE optic_header.statusz<>'LEZÁRATLAN'
+  AND optic_header.statusz<>'STORNÓ'
+  AND optic_header.datum='{2}'
+ ) -
+ (SELECT COALESCE(sum((optic_item.ertek_brutto-( (optic_item.engedmeny/100)*optic_item.ertek_brutto))),0)
+  FROM optic_header, optic_item
+  WHERE optic_item.optic_header_kod=optic_header.kod
+  AND optic_item.fiz_mod<>'KÉSZPÉNZ'
+  AND optic_item.elorefizet='IGEN'
+  AND optic_header.statusz<>'LEZÁRATLAN'
+  AND optic_header.statusz<>'STORNÓ'
+  AND optic_header.datum='{2}'
+ )
+ +
+ (select COALESCE(sum(utolag),0) from optic_header
+  WHERE optic_header.statusz<>'LEZÁRATLAN'
+  AND optic_header.statusz<>'STORNÓ'
+  AND optic_header.datum_kesz='{2}'
+ ) - (SELECT COALESCE(sum((optic_item.ertek_brutto-( (optic_item.engedmeny/100)*optic_item.ertek_brutto))),0)
+  FROM optic_header, optic_item
+  WHERE optic_item.optic_header_kod=optic_header.kod
+  AND optic_item.fiz_mod<>'KÉSZPÉNZ'
+  AND optic_item.elorefizet='NEM'
+  AND optic_header.statusz<>'LEZÁRATLAN'
+  AND optic_header.statusz<>'STORNÓ'
+  AND optic_header.datum_kesz='{2}'
+ )
+ +
+ (SELECT
+  COALESCE(sum(penzmozgasok.osszeg),0) FROM penzmozgasok, pmozgasnemek
+  WHERE penzmozgasok.pmozgasnem_id=pmozgasnemek.id
+  AND penzmozgasok.kelte='{2}'
+  AND penzmozgasok.tipus='PÉNZTÁR'
+  AND pmozgasnemek.bevetel_kiadas='Kiadás'
+  AND pmozgasnem_id='22'
+  ORDER BY penzmozgasok.sorszam ) AS zaro_kassza,
+
+
+(SELECT sum(biz_header_ext.ossz_brutto_ft) FROM biz_header, biz_header_ext
+WHERE biz_header_ext.biz_header_id=biz_header.id
+AND biz_header.lezarva=1
+AND biz_header.biz_modul_kod=1203
+AND biz_header.kelte='{2}'
+) AS bevetelezett_ossz

@@ -1,0 +1,24 @@
+    SELECT
+    DISTINCT
+    bi.biz_header_id, 
+    bie.afakulcs, 
+
+    sum(bie.ossz_netto_ft) as ossz_netto,
+    sum(bie.ossz_afa_ft) as ossz_afa, 
+    sum(bie.ossz_brutto_ft) as ossz_brutto
+
+    FROM biz_header bh, biz_header_ext bhe, biz_item bi, biz_item_ext bie 
+    WHERE
+     bh.id = bhe.biz_header_id 
+    AND
+     bi.biz_header_id = BH.id 
+    AND 
+     bie.biz_item_id = bi.id
+    AND
+     kelte BETWEEN {1} AND {2} {3}
+    AND 
+     biz_modul_kod = {4} 
+    AND 
+     bh.lezarva = 1 
+    GROUP BY bi.biz_header_id, bie.afakulcs 
+    ORDER BY bi.biz_header_id, bie.afakulcs

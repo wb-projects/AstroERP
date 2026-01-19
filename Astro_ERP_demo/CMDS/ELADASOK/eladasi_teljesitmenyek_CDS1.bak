@@ -1,0 +1,17 @@
+SELECT munkatarsak.nev, munkatarsak.kod as USR, str_to_date('{1}', '%Y.%m.%d.' ) as Date1, str_to_date('{2}', '%Y.%m.%d.' ) AS Date2,
+
+ (SELECT count(rendeles_header.osszesen) FROM rendeles_header WHERE ( rendeles_header.datum BETWEEN str_to_date('{1}', '%Y.%m.%d.' ) AND str_to_date('{2}', '%Y.%m.%d.' ) ) AND rendeles_header.user_kod=munkatarsak.kod ) as mgr_count,
+ (SELECT avg(rendeles_header.osszesen) FROM rendeles_header WHERE ( rendeles_header.datum BETWEEN str_to_date('{1}', '%Y.%m.%d.' ) AND str_to_date('{2}', '%Y.%m.%d.' ) ) AND rendeles_header.user_kod=munkatarsak.kod ) as mgr_avg,
+ (SELECT sum(rendeles_header.osszesen) FROM rendeles_header WHERE ( rendeles_header.datum BETWEEN str_to_date('{1}', '%Y.%m.%d.' ) AND str_to_date('{2}', '%Y.%m.%d.' ) ) AND rendeles_header.user_kod=munkatarsak.kod ) as mgr_sum,
+
+ (SELECT count(szamla_header_except_mgr_view.szla_ertek_brutto) FROM szamla_header_except_mgr_view WHERE ( szamla_header_except_mgr_view.kelte BETWEEN str_to_date('{1}', '%Y.%m.%d.' ) AND str_to_date('{2}', '%Y.%m.%d.' ) ) AND szamla_header_except_mgr_view.munkatars_id=munkatarsak.id ) as szla_count,
+ (SELECT avg(szamla_header_except_mgr_view.szla_ertek_brutto) FROM szamla_header_except_mgr_view WHERE ( szamla_header_except_mgr_view.kelte BETWEEN str_to_date('{1}', '%Y.%m.%d.' ) AND str_to_date('{2}', '%Y.%m.%d.' ) ) AND szamla_header_except_mgr_view.munkatars_id=munkatarsak.id ) as szla_avg,
+ (SELECT sum(szamla_header_except_mgr_view.szla_ertek_brutto) FROM szamla_header_except_mgr_view WHERE ( szamla_header_except_mgr_view.kelte BETWEEN str_to_date('{1}', '%Y.%m.%d.' ) AND str_to_date('{2}', '%Y.%m.%d.' ) ) AND szamla_header_except_mgr_view.munkatars_id=munkatarsak.id ) as szla_sum,
+
+ (SELECT sum(rendeles_header.osszesen) FROM rendeles_header WHERE ( rendeles_header.datum BETWEEN str_to_date('{1}', '%Y.%m.%d.' ) AND str_to_date('{2}', '%Y.%m.%d.' ) ) AND rendeles_header.user_kod=munkatarsak.kod )
+ +
+ (SELECT sum(szamla_header_except_mgr_view.szla_ertek_brutto) FROM szamla_header_except_mgr_view WHERE ( szamla_header_except_mgr_view.kelte BETWEEN str_to_date('{1}', '%Y.%m.%d.' ) AND str_to_date('{2}', '%Y.%m.%d.' ) ) AND szamla_header_except_mgr_view.munkatars_id=munkatarsak.id )
+ as osszesen
+
+FROM munkatarsak
+ORDER BY munkatarsak.nev ASC

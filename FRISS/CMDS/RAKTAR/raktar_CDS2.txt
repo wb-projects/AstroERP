@@ -1,0 +1,7 @@
+﻿select ri.*, Concat('Gyártás dátuma / MFG date: ',ri.gyart_datum,'   Szavatosság lejár / Expiration date: ',ri.lejar_datum) as gyart_lejar_datum, at.teljes_megnevezes, at.m_egys, at.kod as termekkod, at.cikkszam,
+ifnull((select GROUP_CONCAT( DISTINCT nev SEPARATOR '  ?  ' ) from tarhely where raktar_id=rh.forras_raktar_id and arutorzs_id=ri.arutorzs_id),'') as rakt_poz_1,
+ifnull((select GROUP_CONCAT( DISTINCT nev SEPARATOR '  ?  ' ) from tarhely where raktar_id=rh.cel_raktar_id and arutorzs_id=ri.arutorzs_id),'') as rakt_poz_2
+from raktarmozgas_items ri
+left join raktarmozgas_header rh on rh.id=ri.raktarmozgas_header_id
+left join arutorzs at on at.id = ri.arutorzs_id
+where ri.raktarmozgas_header_id = {1}

@@ -1,0 +1,39 @@
+﻿WITH RankedPenzmozgasok AS (
+    SELECT
+        pm.ID,
+        pm.TIPUS,
+        pm.KELTE,
+        CASE
+            WHEN pm.TIPUS LIKE 'P%' THEN 'PNZ'
+            WHEN pm.TIPUS LIKE 'B%' THEN 'BNK'
+            ELSE ''
+        END AS PREFIX,
+        COALESCE(p.kod, b.kod) AS KOD, -- Lekérdezzük a KOD mezőt
+        ROW_NUMBER() OVER (
+            PARTITION BY
+                YEAR(pm.KELTE),
+                CASE WHEN pm.TIPUS LIKE 'P%' THEN pm.PENZTAR_ID ELSE pm.BANKSZAMLA_ID END,
+                pm.TIPUS
+            ORDER BY
+                pm.KELTE,
+                pm.ID
+        ) AS NewSSZ
+    FROM
+        penzmozgasok pm
+    LEFT JOIN
+        penztar p ON pm.PENZTAR_ID = p.ID
+    LEFT JOIN
+        bankszamla b ON pm.BANKSZAMLA_ID = b.ID
+)
+-- Az UPDATE parancs, a CONCAT és LPAD használatával
+UPDATE penzmozgasok pm
+JOIN RankedPenzmozgasok rp ON pm.ID = rp.ID
+SET
+    pm.SORSZAM = CONCAT(
+        rp.PREFIX,
+        LPAD(rp.KOD, 3, '0'),  -- Kód nullákkal feltöltve 3 karakterre
+        '/',
+        YEAR(rp.KELTE),        -- Év a KELTE mezőből
+        '/',
+        LPAD(rp.NewSSZ, 8, '0')  -- Sorszám nullákkal feltöltve 8 karakterre
+    );

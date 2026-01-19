@@ -1,0 +1,15 @@
+SELECT ML.id, M.production_unit,
+ML.working_time AS working_time_day,
+(Select Sum(working_time) From machine_log Where machine_id=M.id And YEARWEEK(work_date, 7)=YEARWEEK(ML.work_date, 7)) AS working_time_week,
+(Select Sum(working_time) From machine_log Where machine_id=M.id And YEAR(work_date)=YEAR(ML.work_date) And MONTH(work_date)=MONTH(ML.work_date)) AS working_time_month,
+(Select Sum(working_time) From machine_log Where machine_id=M.id And YEAR(work_date)=YEAR(ML.work_date)) AS working_time_year,
+ML.produced_quantity AS produced_quantity_day,
+(Select Sum(produced_quantity) From machine_log Where machine_id=M.id And YEARWEEK(work_date, 7)=YEARWEEK(ML.work_date, 7)) AS produced_quantity_week,
+(Select Sum(produced_quantity) From machine_log Where machine_id=M.id And YEAR(work_date)=YEAR(ML.work_date) And MONTH(work_date)=MONTH(ML.work_date)) AS produced_quantity_month,
+(Select Sum(produced_quantity) From machine_log Where machine_id=M.id And YEAR(work_date)=YEAR(ML.work_date)) AS produced_quantity_year,
+IFNULL((ML.working_time/60)/ML.produced_quantity, 0) AS productivity_day,
+(Select IFNULL(Sum(working_time/60)/Sum(produced_quantity), 0) From machine_log Where machine_id=M.id And YEARWEEK(work_date, 7)=YEARWEEK(ML.work_date, 7)) AS productivity_week,
+(Select IFNULL(Sum(working_time/60)/Sum(produced_quantity), 0) From machine_log Where machine_id=M.id And YEAR(work_date)=YEAR(ML.work_date) And MONTH(work_date)=MONTH(ML.work_date)) AS productivity_month,
+(Select IFNULL(Sum(working_time/60)/Sum(produced_quantity), 0) From machine_log Where machine_id=M.id And YEAR(work_date)=YEAR(ML.work_date)) AS productivity_year,
+M.production_target_day, M.production_target_week, M.production_target_month, M.production_target_year
+FROM machines M, machine_log ML WHERE ML.machine_id=M.id AND ML.work_date=:work_date AND M.id=:machine_id

@@ -1,0 +1,9 @@
+SELECT  
+sum(bhe.hatralek_ft) ossz_brutto_ft, sum(bhe.hatralek) ossz_hatralek 
+      FROM partner p  
+      left join biz_header bh on bh.partner_id = p.id
+      left join biz_header_ext bhe on bhe.biz_header_id = bh.id       
+      WHERE     
+      bh.lezarva = 1 AND bhe.kifizetve <> 1 AND bh.stornozott=0 AND bh.storno=0 AND bh.helyesbitett=0 
+      AND biz_modul_kod = {4} {3} {2} {1} {5} 
+      ORDER BY p.nev

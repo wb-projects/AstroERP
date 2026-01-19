@@ -1,0 +1,11 @@
+SELECT optic_item.*, partner.nev,
+ CASE WHEN elorefizet='IGEN' THEN 'Elõre fiz.' ELSE 'Utólag fiz.' END fizido,
+ (optic_item.ertek_brutto-( (optic_item.engedmeny/100)*optic_item.ertek_brutto)) as e_ossz_brutto, 
+ 'kiadott' as allapot 
+ FROM optic_header, optic_item, partner
+ WHERE optic_item.optic_header_kod=optic_header.kod 
+ AND partner.kod=optic_item.vevo_kod 
+ AND optic_header.statusz<>'LEZÁRATLAN'
+ AND optic_header.statusz<>'STORNÓ'
+ AND ( optic_header.datum='{2}' OR optic_header.datum_kesz='{2}' )
+ ORDER BY optic_item.optic_header_kod, optic_item.id;

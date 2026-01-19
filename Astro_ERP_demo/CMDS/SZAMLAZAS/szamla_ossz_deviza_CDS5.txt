@@ -1,0 +1,8 @@
+SELECT 
+ossz_netto as ossz_ertek_netto,
+ossz_afa as ossz_afa_osszeg,
+ossz_brutto as ossz_ertek_brutto,
+Floor(ossz_brutto) as devizahigh,
+Substring( (ossz_brutto mod 1), 3,4 ) as devizalow
+FROM biz_header_ext 
+WHERE biz_header_id='{1}'

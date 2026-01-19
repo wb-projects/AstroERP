@@ -1,0 +1,79 @@
+select * from
+(
+select
+
+coalesce(
+(select  sum(bhe.hatralek_ft) from biz_header bh
+left join biz_header_ext bhe on bhe.biz_header_id = bh.id
+left join raktar r on r.id = bh.raktar_id
+where DATE(bh.kelte) = DATE(t2.kelte) and bh.storno=0 and bh.stornozott=0 and bh.helyesbitett=0 and (select count(bh8.id) from biz_header bh8 where bh8.source_header_id=bh.id)=0 and bh.biz_modul_kod like '13%' and r.archiv = 1
+),0) kov,
+
+coalesce(
+(select  sum(bhe.hatralek_ft) from biz_header bh
+left join biz_header_ext bhe on bhe.biz_header_id = bh.id
+left join raktar r on r.id = bh.raktar_id
+where DATE(bh.kelte) = DATE(t2.kelte) and bh.storno=0 and bh.stornozott=0 and bh.helyesbitett=0 and (select count(bh8.id) from biz_header bh8 where bh8.source_header_id=bh.id)=0 and bh.biz_modul_kod like '14%' and r.archiv = 1
+),0) tart,
+
+coalesce(
+(select sum(p.osszeg) from 
+penzmozgasok p
+where DATE(p.kelte) = DATE(t2.kelte)  and tipus <> 'BANK' and penztar_id in (select id from penztar where penztarnev = 'HP2')
+),0) pt,
+
+/* az ELadott Áruk Beszerzési Értéke: a raktár kiadás bizonylatok összegébõl kivonjuk a hasznot */
+coalesce(
+(select sum(bie.ossz_netto_ft-ifnull(bie.profit_netto_ft,(SELECT avg(egysegar) FROM biz_item, biz_header WHERE biz_item.biz_header_id=biz_header.id AND Left(biz_header.biz_modul_kod,2)=1204 AND arutorzs_id=bi.arutorzs_id ORDER BY biz_item.id Desc LIMIT 1)*bi.mennyiseg)) 
+from biz_item bi, biz_item_ext bie, biz_header bh
+where bie.biz_item_id=bi.id and bi.biz_header_id=bh.id and DATE(bh.kelte) = DATE(t2.kelte) and bh.lezarva=1 and bh.biz_modul_kod = 1204
+),0) elabe,
+
+DATE(kelte) as kelte
+
+
+from
+(select distinct DATE(kelte) as kelte from
+
+(
+
+select  DATE(bh.kelte) as kelte from biz_header bh
+left join biz_header_ext bhe on bhe.biz_header_id = bh.id
+left join raktar r on r.id = bh.raktar_id
+where bh.kelte is not null and bh.storno=0 and bh.stornozott=0 and bh.helyesbitett=0 and (select count(bh8.id) from biz_header bh8 where bh8.source_header_id=bh.id)=0 and bh.biz_modul_kod like '13%' and r.archiv = 1
+
+
+union
+
+select  DATE(bh.kelte) as kelte  from biz_header bh
+left join biz_header_ext bhe on bhe.biz_header_id = bh.id
+left join raktar r on r.id = bh.raktar_id
+where bh.kelte is not null and bh.storno=0 and bh.stornozott=0 and bh.helyesbitett=0 and (select count(bh8.id) from biz_header bh8 where bh8.source_header_id=bh.id)=0 and bh.biz_modul_kod like '14%' and r.archiv = 1
+
+
+union
+
+select DATE(kelte) as kelte from 
+penzmozgasok
+where tipus <> 'BANK' and DATE(kelte) is not null and penztar_id in (select id from penztar where penztarnev = 'HP2')
+
+
+union
+
+select DATE(bh.kelte) as kelte from biz_header bh
+left join biz_item bi on bi.biz_header_id = bh.id
+left join arutorzs at on bi.arutorzs_id = at.id
+left join afa af on af.id = at.afa_id
+left join raktar r on r.id = bh.raktar_id
+left join arukeszlet ak on at.id = ak.arutorzs_id
+where DATE(bh.kelte) is not null /*and r.archiv = 1*/
+
+union
+
+/* az ELadott Áruk Beszerzési Értéke: a raktár kiadás bizonylatok összegébõl kivonjuk a hasznot */
+select DATE(bh.kelte) as kelte from biz_header bh where DATE(bh.kelte) is not null and bh.lezarva=1 and bh.biz_modul_kod = 1204
+
+
+) t1 where DATE(kelte) BETWEEN {1} AND {2}  
+) t2) t3
+where not( (kov = 0) and (tart = 0) and (pt = 0) and /*(rk2 = 0) and (bolt_selejt = 0) and (selejt_feh = 0) and (2_es_raktar = 0) and*/ (elabe = 0)  )

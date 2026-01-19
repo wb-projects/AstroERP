@@ -1,0 +1,13 @@
+SELECT
+ biz_header.sorszam,
+ biz_item_ext.megnevezes,
+ biz_item.mennyiseg,
+ biz_item.egyseg,
+ biz_item_ext.ossz_brutto_ft as ertek_brutto
+FROM biz_header, biz_item, biz_item_ext
+WHERE biz_header.id=biz_item.biz_header_id AND biz_item_ext.biz_item_id=biz_item.id
+AND biz_header.lezarva=1
+AND biz_header.biz_modul_kod=1203
+AND date(biz_header.kelte)='{2}'
+AND telephely_id={1}
+ORDER BY biz_header.sorszam, megnevezes;

@@ -1,0 +1,15 @@
+SELECT
+str_to_date('{1}', '%Y.%m.%d.' ) as Date1, str_to_date('{2}', '%Y.%m.%d.' ) AS Date2,
+hoz.vevo_kod AS ugyfelkod, partner.nev as ugyfelnev,
+(select sum(mennyiseg) from hozzarendeles where mennyiseg>0 and vevo_kod=hoz.vevo_kod and datum between Date1 and Date2) AS kiadott,
+(select abs(sum(mennyiseg)) from hozzarendeles where mennyiseg<0 and vevo_kod=hoz.vevo_kod and datum between Date1 and Date2) AS eladott,
+sum(mennyiseg) as kintlevo,
+(select abs(sum(mennyiseg*eladasi_ar)) from hozzarendeles, arukeszlet where mennyiseg<0 and arukeszlet.kod=hozzarendeles.arukeszlet_kod and vevo_kod=hoz.vevo_kod and datum between Date1 and Date2) AS netto_ertek,
+(select abs(sum(mennyiseg*eladasi_ar * (1+(afa.afakulcs/100)) )) from hozzarendeles, arukeszlet, arutorzs, afa where mennyiseg<0 and arukeszlet.kod=hozzarendeles.arukeszlet_kod and arutorzs.kod=arukeszlet.arutorzs_kod and afa.kod=arutorzs.afa_kod and vevo_kod=hoz.vevo_kod and datum between Date1 and Date2) AS brutto_ertek
+FROM hozzarendeles AS hoz, partner, arukeszlet, arutorzs, afa
+WHERE partner.kod=hoz.vevo_kod
+AND arukeszlet.kod=hoz.arukeszlet_kod
+AND arutorzs.kod=arukeszlet.arutorzs_kod
+AND afa.kod=arutorzs.afa_kod
+and datum between (select Date1) and (select Date2)
+GROUP BY hoz.vevo_kod

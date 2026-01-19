@@ -1,0 +1,1 @@
+SELECT DISTINCT fiz_mod FROM szamla_header WHERE kelte BETWEEN {1} AND {2} AND tipus LIKE 'NYUGTA' ORDER BY fiz_mod

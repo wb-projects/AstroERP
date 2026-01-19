@@ -1,0 +1,11 @@
+SELECT DISTINCT
+afa_id, 
+afakulcs as afa,
+afanev as afa_nev,
+afa_text,
+sum(ossz_netto_ft) as a_ertek_netto,
+sum(ossz_afa_ft) as a_afa_osszeg,
+sum(ossz_brutto_ft) as a_ertek_brutto
+FROM biz_item, biz_item_ext
+WHERE biz_item_ext.biz_item_id=biz_item.id AND biz_header_id='{1}'
+GROUP BY afa_id

@@ -1,0 +1,16 @@
+select bh.munkaszam, sorszam, bi.arutorzs_id ,
+
+(select coalesce(sum(bii.mennyiseg),0) from biz_header bh
+left join biz_item bii on bii.biz_header_id = bh.id
+left join biz_settings bs on bs.kod = bh.biz_modul_kod
+where bs.sorszam_prefix = 'REND' and bii.arutorzs_id = bi.arutorzs_id)  megr,
+
+(select sum(keszlet) from arukeszlet ak
+where ak.munkaszam = bh.munkaszam and ak.arutorzs_id = bi.arutorzs_id) keszlet
+
+
+
+from biz_header bh
+left join biz_item bi on bi.biz_header_id = bh.id
+left join biz_settings bs on bs.kod = bh.biz_modul_kod
+where bs.sorszam_prefix = 'BREND'

@@ -1,0 +1,7 @@
+select rh.id, rh.sorszam, rh.datum, rf.megnevezes forras_raktar, rc.megnevezes cel_raktar,
+ifnull((select nev from munkatarsak where id=munkatars1_id),'') as user_nev_1,
+ifnull((select nev from munkatarsak where id=munkatars2_id),'') as user_nev_2
+from raktarmozgas_header rh
+left join raktar rf on rf.id = rh.forras_raktar_id
+left join raktar rc on rc.id = rh.cel_raktar_id
+where rh.id = {1}

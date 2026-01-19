@@ -1,0 +1,3 @@
+    SELECT DISTINCT fiz_mod, sum(szla_ertek_brutto) as ossz_brutto
+     FROM szamla_header WHERE kelte BETWEEN {1} AND {2}
+     AND tipus LIKE 'NYUGTA' GROUP BY fiz_mod ORDER BY fiz_mod

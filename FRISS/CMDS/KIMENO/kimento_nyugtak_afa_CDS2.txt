@@ -1,0 +1,15 @@
+    SELECT szamla_header.szamla_szam, 
+    szamla_header.ugyfel_nev, 
+    szamla_header.fiz_mod, 
+     CASE
+     WHEN storno = 'IGEN' AND sum(szamla_items.ertek_brutto-( (szamla_items.engedmeny/100)*szamla_items.ertek_brutto)) <= 0 THEN strn_megj
+     WHEN storno = 'IGEN' THEN 'Stornó'
+     WHEN szamla_header.hatarido < NOW() AND CalcHatralek(szamla_header.id)>0 AND szamla_header.fiz_mod <> 'KÉSZPÉNZ' THEN 'Lejárt a fizetési határidõ !'
+     WHEN szamla_header.hatarido >= NOW() AND CalcHatralek(szamla_header.id)>0 AND szamla_header.fiz_mod <> 'KÉSZPÉNZ' THEN 'Tartozik'
+     ELSE 'Kifizetve'
+     END allapot, 
+    sum(szamla_items.ertek_netto-( (szamla_items.engedmeny/100)*szamla_items.ertek_netto)) as ossz_ertek_netto, 
+    sum(szamla_items.afa_osszeg-( (szamla_items.engedmeny/100)*szamla_items.afa_osszeg)) as ossz_afa_osszeg, 
+    sum(szamla_items.ertek_brutto-( (szamla_items.engedmeny/100)*szamla_items.ertek_brutto)) as ossz_ertek_brutto 
+     FROM szamla_header, szamla_items WHERE szamla_items.szamla_szam=szamla_header.szamla_szam AND kelte BETWEEN {1} AND {2}
+     AND szamla_header.tipus LIKE 'NYUGTA' GROUP BY szamla_header.szamla_szam ORDER BY kelte
